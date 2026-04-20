@@ -1,0 +1,173 @@
+#:kivy 2.1.0
+
+ScreenManager:
+    MainScreen:
+    EditScreen:
+
+<MainScreen>:
+    name: "main"
+
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Task Planner"
+            font_size: "40sp"
+            size_hint_y: None
+            height: "40dp"
+            color: 0,0,0,1
+            font_name: "font/short/Short.ttf"
+
+        ScrollView:
+            size_hint_y: 1
+            do_scroll_x: False
+            do_scroll_y: True
+
+            BoxLayout:
+                id: task_list
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 10
+               
+                
+
+    FloatLayout:
+        Image:
+            source: "icons/plus-64.png"
+            size_hint: None, None
+            size: dp(42), dp(42)
+            pos_hint: {"right": 0.96, "top": 0.091}
+
+        Button:
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            size_hint: None, None
+            pos_hint: {"right": 0.96, "top": 0.091}
+            size: dp(42), dp(42)
+            on_release: app.edit_screen.open_task("")
+
+<EditScreen>:
+    name: "edit"
+
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        # TextInput занимает всю ширину и 93% высоты, располагаясь снизу
+        TextInput:
+            id: edit_text
+            text: root.task_text
+            multiline: True
+            size_hint: 1, 0.93
+            padding: 10
+            pos_hint: {"x": 0, "y": 0}
+
+        # Кнопка "Назад" в левом верхнем углу
+        FloatLayout:
+            size_hint: None, None
+            size: dp(42), dp(42)
+            pos_hint: {"x": 0, "top": 1}
+            Image:
+                source: "icons/arrow-left.png"
+                size_hint: None, None
+                size: dp(42), dp(42)
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            Button:
+                background_normal: ""
+                background_color: 0,0,0,0
+                size_hint: None, None
+                size: dp(42), dp(42)
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                on_release: app.root.current = "main"
+
+        # Правый верхний угол: кастомный спиннер, кнопка "Удалить" и "Сохранить"
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: dp(10)
+            size_hint: None, None
+            width: dp(42)*2 + dp(10)*1 + dp(140) - dp(20)  # уменьшение ширины
+            height: dp(42)
+            pos_hint: {"right": 0.91, "top": 1}  # смещение левее
+
+
+            # Кастомный спиннер с текстом слева от иконки (идентификатор для доступа в коде)
+            CustomSpinner:
+                id: custom_spinner
+
+            # Кнопка "Удалить"
+            FloatLayout:
+                size_hint: None, None
+                size: dp(42), dp(42)
+                Image:
+                    source: "icons/delete.png"
+                    size_hint: None, None
+                    size: dp(42), dp(42)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                Button:
+                    background_normal: ""
+                    background_color: 0,0,0,0
+                    size_hint: None, None
+                    size: dp(42), dp(42)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                    on_release: root.delete_task()
+
+            # Кнопка "Сохранить"
+            FloatLayout:
+                size_hint: None, None
+                size: dp(42), dp(42)
+                Image:
+                    source: "icons/check2.png"
+                    size_hint: None, None
+                    size: dp(42), dp(42)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                Button:
+                    background_normal: ""
+                    background_color: 0,0,0,0
+                    size_hint: None, None
+                    size: dp(42), dp(42)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                    on_release: root.save_task()
+
+# Определяем правило для кастомного спиннера
+<CustomSpinner@BoxLayout>:
+    orientation: "horizontal"
+    size_hint: None, None
+    height: dp(42)
+    width: dp(140)
+    # Метка для отображения текста слева от иконки
+    Label:
+        id: spinner_label
+        text: root.spinner_text
+        size_hint_x: 0.6
+        valign: "middle"
+        halign: "left"
+        text_size: self.size
+    # Область с иконкой (нажатия воспринимаются именно на ней)
+    FloatLayout:
+        size_hint_x: 0.4
+        Image:
+            source: "icons/clock-seven.png"
+            size_hint: None, None
+            size: dp(42), dp(42)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        Button:
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            size_hint: None, None
+            size: dp(42), dp(42)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_release: root.open_dropdown()
